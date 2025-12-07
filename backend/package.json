@@ -2,6 +2,11 @@
   "dependencies": {
     "express": "^5.2.1",
     "npm": "^11.6.4",
-    "start": "^5.1.0"
+},
+  "devDependencies": {
+    "eslint": "^9.39.1"
   }
+},
+"scripts": {
+  "start": "node server.js"
 }

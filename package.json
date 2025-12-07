@@ -1,7 +1,5 @@
 {
   "dependencies": {
-    "express": "^5.2.1",
-    "npm": "^11.6.4",
-    "start": "^5.1.0"
+    "express": "^5.2.1"
   }
 }
