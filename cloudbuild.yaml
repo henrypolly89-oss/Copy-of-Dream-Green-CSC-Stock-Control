@@ -28,5 +28,5 @@ images:
   - 'europe-west1-docker.pkg.dev/prime-bonbon-480612/dream-green-repo/dreamgreen-image:$COMMIT_SHA'
 
 options:
-logging: CLOUD_LOGGING_ONLY
+  logging: CLOUD_LOGGING_ONLY
 
