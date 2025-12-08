@@ -1,0 +1,28 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args: [
+      'build',
+      '-t',
+      'europe-west1-docker.pkg.dev/prime-bonbon-480612/dream-green-repo/dreamgreen-image:$COMMIT_SHA',
+      '.'
+    ]
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args: [
+      'push',
+      'europe-west1-docker.pkg.dev/prime-bonbon-480612/dream-green-repo/dreamgreen-image:$COMMIT_SHA'
+    ]
+
+  - name: 'gcr.io/google-cloud-sdk:latest'
+    entrypoint: gcloud
+    args:
+      [
+        'run', 'deploy', 'dreamgreen-backend',
+        '--image', 'europe-west1-docker.pkg.dev/prime-bonbon-480612/dream-green-repo/dreamgreen-image:$COMMIT_SHA',
+        '--region', 'europe-west1',
+        '--platform', 'managed',
+        '--allow-unauthenticated'
+      ]
+
+images:
+  - 'europe-west1-docker.pkg.dev/prime-bonbon-480612/dream-green-repo/dreamgreen-image:$COMMIT_SHA'
