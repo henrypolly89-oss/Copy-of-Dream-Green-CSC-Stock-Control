@@ -5,7 +5,7 @@ steps:
     'build',
     '-t',
     'europe-west1-docker.pkg.dev/prime-bonbon-480612/dream-green-repo/dreamgreen-image:$COMMIT_SHA'
-    '.'
+    '.',
   ]  
 
   - name: 'gcr.io/cloud-builders/docker'
