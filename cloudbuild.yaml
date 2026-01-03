@@ -1,33 +1,45 @@
 steps:
-- name: 'gcr.io/cloud-builders/docker'
-  dir: 'backend'
-  args: [
-    'build',
-    '-t',
-    'europe-west1-docker.pkg.dev/prime-bonbon-480612/dream-green-repo/dreamgreen-image:$COMMIT_SHA',
-    '.'
-  ]
+  # Build backend
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/backend', './backend']
 
-- name: 'gcr.io/cloud-builders/docker'
-  args: [
-      'push',
-      'europe-west1-docker.pkg.dev/prime-bonbon-480612/dream-green-repo/dreamgreen-image:$COMMIT_SHA'
-    ]
+  # Push backend image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/backend']
 
-- name: 'gcr.io/google-cloud-sdk:latest'
-  entrypoint: gcloud
-  args: [
-    'run', 'deploy', 'dreamgreen-backend',
-    '--image', 'europe-west1-docker.pkg.dev/prime-bonbon-480612/dream-green-repo/dreamgreen-image:$COMMIT_SHA',
-    '--region', 'europe-west1',
-    '--platform', 'managed',
-    '--allow-unauthenticated'
-  ]
-   
+  # Deploy backend to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      [
+        'run', 'deploy', 'dreamgreen-backend',
+        '--image', 'gcr.io/$PROJECT_ID/backend',
+        '--region', 'europe-west1',
+        '--platform', 'managed',
+        '--allow-unauthenticated'
+      ]
+
+  # Build frontend
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/frontend', './frontend']
+
+  # Push frontend image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/frontend']
+
+  # Deploy frontend to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      [
+        'run', 'deploy', 'dreamgreen-frontend',
+        '--image', 'gcr.io/$PROJECT_ID/frontend',
+        '--region', 'europe-west1',
+        '--platform', 'managed',
+        '--allow-unauthenticated'
+      ]
 
 images:
-  - 'europe-west1-docker.pkg.dev/prime-bonbon-480612/dream-green-repo/dreamgreen-image:$COMMIT_SHA'
-
-options:
-  logging: CLOUD_LOGGING_ONLY
+  - 'gcr.io/$PROJECT_ID/backend'
+  - 'gcr.io/$PROJECT_ID/frontend'
 
