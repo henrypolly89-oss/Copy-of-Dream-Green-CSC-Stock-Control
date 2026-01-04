@@ -5,6 +5,10 @@ const path = require('path');
 const app = express();
 app.use(express.json());
 
+app.get('/', (req, res) => {
+  res.send('Dream Green backend is live');
+});
+
 // Save with backup and cleanup
 function saveWithBackup(filename, data) {
   data.savedAt = new Date().toISOString();
@@ -100,26 +104,9 @@ app.post('/update', (req, res) => {
     res.status(200).send(`Generic update saved as ${filename}`);
   } catch (error) {
     console.error('Error saving update:', error);
-    res.status(500).send({ status: 'error', message: error.message });
-  }
-});app.post('/update', (req, res) => {
-    const change = req.body;
-    if (!change || Object.keys(change).length === 0) {
-        return res.status(400).send('Missing update data');
-    }
-
-    change.savedAt = new Date().toISOString();
-
-    const backupDir = path.join(__dirname, 'backups');
-    if (!fs.existsSync(backupDir)) {
-        fs.mkdirSync(backupDir);
-    }
-
-    const filename = `update-${Date.now()}.json`;
-    fs.writeFileSync(path.join(backupDir, filename), JSON.stringify(change, null, 2));
-
-    res.send(`Generic update saved as ${filename}`);
-});
+    res.status(500).send({ status: 'error', message: error.message });  //
+      } 
+    });
 // Start server
 app.listen(8080, () => {
   console.log('🚀 Server running on port 8080');
