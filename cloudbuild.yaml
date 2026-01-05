@@ -35,7 +35,7 @@ steps:
     args:
       [
         'run', 'deploy', 'dreamgreen-frontend',
-        '--image', 'gcr.io/$PROJECT_ID/frontend',
+        '--image', 'europe-west1-docker.pkg.dev/$PROJECT_ID/dream-green-repo/frontend',
         '--region', 'europe-west1',
         '--platform', 'managed',
         '--allow-unauthenticated'
