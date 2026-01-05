@@ -18,4 +18,5 @@ FROM nginx:stable-alpine
 COPY --from=builder /app/dist /usr/share/nginx/html
 
 EXPOSE 80
+ENV PORT=8080
 CMD ["nginx", "-g", "daemon off;"]
