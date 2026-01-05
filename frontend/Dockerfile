@@ -10,7 +10,7 @@ COPY vite.config.ts ./
 COPY tsconfig.json ./
 COPY . .
 
-RUN npm install
+RUN npm install --legacy-peer-deps
 RUN npm run build
 
 # Use nginx to serve the built files
