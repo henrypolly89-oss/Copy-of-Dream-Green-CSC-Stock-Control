@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dream Green Control Panel</title>
+</head>
+<body>
+  <h1>Dream Green Control Panel</h1>
+
+  <button onclick="testBackup()">Test Backup</button>
+  <button onclick="updateProducts()">Update Products</button>
+
+  <script>
+    const BASE_URL = 'https://backend-957661232868.europe-west1.run.app';
+
+    function testBackup() {
+      fetch(`${BASE_URL}/test-backup`)
+        .then(res => res.text())
+        .then(msg => alert(msg))
+        .catch(err => alert('Error: ' + err));
+    }
+
+    function updateProducts() {
+      fetch(`${BASE_URL}/update-products`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          products: [
+            { name: 'Dream Green Flower', quantity: 42 },
+            { name: 'Dream Green Oil', quantity: 15 }
+          ]
+        })
+      })
+      .then(res => res.text())
+      .then(msg => alert(msg))
+      .catch(err => alert('Error: ' + err));
+    }
+  </script>
+</body>
+</html>
