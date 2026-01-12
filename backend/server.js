@@ -124,11 +124,9 @@ app.post('/update', (req, res) => {
     res.send(`Generic update saved as ${filename}`);
 });
 
+// Start server
+const PORT = process.env.PORT || 8080;
+
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
-
-});
-// Start server
-app.listen(8080, () => {
-  console.log('🚀 Server running on port 8080');
 });

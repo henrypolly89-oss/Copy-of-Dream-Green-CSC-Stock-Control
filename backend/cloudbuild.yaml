@@ -1,0 +1,15 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args: [
+      'build', '-t',
+      'europe-west1-docker.pkg.dev/prime-bonbon-480612-p7/dream-green-repo/frontend:latest',
+      '.'
+    ]
+  - name: 'gcr.io/cloud-builders/docker'
+    args: [
+      'push',
+      'europe-west1-docker.pkg.dev/prime-bonbon-480612-p7/dream-green-repo/frontend:latest'
+    ]
+
+images:
+  - 'europe-west1-docker.pkg.dev/prime-bonbon-480612-p7/dream-green-repo/frontend:latest'
