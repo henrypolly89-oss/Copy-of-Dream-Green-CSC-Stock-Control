@@ -1,3 +1,5 @@
+logsBucket: gs://dg-cloudbuild-logs
+
 steps:
 - name: 'gcr.io/cloud-builders/docker'
   dir: 'backend'
