@@ -20,20 +20,18 @@
     }
 
     function updateProducts() {
-      fetch(`${BASE_URL}/update-products`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          products: [
-            { name: 'Dream Green Flower', quantity: 42 },
-            { name: 'Dream Green Oil', quantity: 15 }
-          ]
-        })
-      })
-      .then(res => res.text())
-      .then(msg => alert(msg))
-      .catch(err => alert('Error: ' + err));
-    }
+  fetch(`${BASE_URL}/update-products`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify([
+      { name: 'Dream Green Flower', quantity: 42 },
+      { name: 'Dream Green Oil', quantity: 15 }
+    ])
+  })
+  .then(res => res.text())
+  .then(msg => alert(msg))
+  .catch(err => alert('Error: ' + err));
+}
   </script>
 </body>
 </html>
