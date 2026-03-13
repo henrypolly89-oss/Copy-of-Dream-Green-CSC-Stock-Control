@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+    <meta charset="UTF-8">
+    <title>Dream Green – Back Office</title>
+    <link rel="stylesheet" href="backoffice.css">
+    <script src="backoffice.js" defer></script>
+</head>
+<body>
+
+<div id="layout">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar">
+    <div id="sidebar-header">
+      <div class="sidebar-header-row">
+        <span>Back Office</span>
+        <img src="icon-192.png" alt="Dream Green Logo" class="sidebar-logo">
+      </div>
+    </div>
+
+    <div class="sidebar-item" data-section="home-window">🏠 Home</div>
+    <div class="sidebar-item" data-section="products-window">📦 Products</div>
+    <div class="sidebar-item" data-section="categories-window">🗂️ Categories</div>
+    <div class="sidebar-item" data-section="staff-window">👥 Staff</div>
+    <div class="sidebar-item" data-section="members-window">🪪 Members</div>
+    <div class="sidebar-item" data-section="cash-up-window">💰 Cash Up</div>
+    <div class="sidebar-item" data-section="inventory-window">📊 Inventory</div>
+    <div class="sidebar-item" data-section="sales-log-window">🧾 Sales Log</div>
+    <div class="sidebar-item" data-section="settings-window">⚙️ Settings</div>
+    <div class="sidebar-item" data-section="roi-window">📈 ROI</div>
+
+    <button id="back-to-front">Return to Front Office</button>
+  </div>
+
+
+  <!-- WINDOW AREA -->
+  <div id="window-area">
+
+    <!-- HOME WINDOW -->
+ <div id="home-window" class="window">
+  <div class="window-header">
+
+    <button id="open-calendar" class="primary-btn">Open Calendar</button>
+
+    <!-- LEFT: Date/Time card -->
+    <div class="header-left">
+      <div id="datetime-card" class="datetime-card">
+        <div class="dt-icon">📅</div>
+        <div class="dt-info">
+          <div class="dt-day" id="dt-day"></div>
+          <div class="dt-date" id="dt-date"></div>
+          <div class="dt-time" id="dt-time"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CENTER: Home title -->
+    <div class="header-center">
+      <h2>Home</h2>
+    </div>
+
+    <!-- RIGHT: empty (keeps center centered) -->
+    <div class="header-right"></div>
+
+  </div>
+
+  <div class="window-body" style="position:relative;">
+
+    <div id="home-panel">
+
+      <div id="home-cards">
+
+        <!-- Sales Today card -->
+        <div class="home-card">
+          <h4 style="margin:0; color:#1b5e20;">Sales Today</h4>
+          <div id="sales-today-value" style="font-size:24px; font-weight:bold; color:#1b5e20;">
+            €0.00
+          </div>
+        </div>
+
+        <!-- Daily Profit card -->
+        <div class="home-card" id="profit-card">
+          <div class="profit-grid">
+
+            <div class="profit-col">
+              <div class="profit-stack">
+                <div class="profit-heading">Daily Profit (€)</div>
+                <div id="profit-euro" class="profit-value">€0.00</div>
+              </div>
+            </div>
+
+            <div class="profit-col">
+              <div class="profit-stack">
+                <div class="profit-heading">Daily Profit (%)</div>
+                <div id="profit-percent" class="profit-value">0%</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+       <div class="home-card" id="stock-alert-card">
+  <h4 style="margin:0; color:#1b5e20;">Stock Alerts</h4>
+
+  <div class="stock-alert-section">
+    <h5 class="stock-alert-title">Out of Stock</h5>
+    <ul id="out-of-stock-list" class="stock-list"></ul>
+  </div>
+
+  <div class="stock-alert-section">
+    <h5 class="stock-alert-title">Low Stock</h5>
+    <ul id="low-stock-list" class="stock-list"></ul>
+  </div>
+</div>
+
+<!-- Revenue Performance Card -->
+<div class="home-card" id="revenue-chart-card">
+    <h3>Revenue Performance</h3>
+    <div class="chart-tabs">
+        <button data-range="today" class="active">Today</button>
+        <button data-range="week">Week</button>
+        <button data-range="month">Month</button>
+    </div>
+    <canvas id="revenueChart"></canvas>
+</div>
+
+<!-- Profit Performance Card -->
+<div class="home-card" id="profit-chart-card">
+    <h3>Profit Performance</h3>
+    <div class="chart-tabs">
+        <button data-range="today" class="active">Today</button>
+        <button data-range="week">Week</button>
+        <button data-range="month">Month</button>
+    </div>
+    <canvas id="profitChart"></canvas>
+</div>
+
+      </div> <!-- end home-cards -->
+
+    </div> <!-- end home-panel -->
+
+  </div> <!-- end window-body -->
+
+</div> <!-- end home-window -->
+
+<!-- PRODUCTS WINDOW -->
+<div id="products-window" class="window hidden">
+  <div class="window-header">
+    <h2>Products</h2>
+  </div>
+
+  <div class="window-body">
+
+    <button id="add-product-btn" class="primary-btn">Add Product</button>
+
+    <input id="products-search" type="text" placeholder="Search products...">
+
+    <div id="products-container">
+      <div id="products-sidebar" class="products-sidebar"></div>
+      <div id="products-list" class="products-list"></div>
+    </div>
+
+  </div> <!-- closes .window-body -->
+
+</div> <!-- closes #products-window -->
+
+
+    <!-- CATEGORIES WINDOW -->
+    <div id="categories-window" class="window hidden">
+      <div class="window-header">
+        <h2>Categories</h2>
+      </div>
+
+      <div class="window-body">
+        <button id="add-category-btn" class="primary-btn">Add Category</button>
+        <div id="category-grid" class="grid"></div>
+      </div>
+
+      <!-- CATEGORY MODAL -->
+      <div id="category-modal" class="modal hidden">
+        <div class="modal-content modern-modal">
+          <h3 id="category-modal-title" class="modal-title">Add Category</h3>
+
+          <label>
+            Category Name
+            <input type="text" id="category-name" placeholder="Type Here......" />
+          </label>
+
+          <label>
+            Category Image
+            <input type="file" id="category-image-input" accept="image/*" />
+          </label>
+
+         <img id="category-image-preview" class="image-preview"
+     src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" />
+
+
+          <div class="modal-actions">
+            <button id="category-save-btn" class="primary-btn">Save</button>
+            <button id="category-cancel-btn" class="cancel-btn">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- STAFF WINDOW -->
+    <div id="staff-window" class="window hidden">
+      <div class="window-header">
+        <h2>Staff</h2>
+      </div>
+      <div class="window-body">
+        <p>Staff management coming soon.</p>
+      </div>
+    </div>
+
+
+    <!-- MEMBERS WINDOW -->
+    <div id="members-window" class="window hidden">
+      <div class="window-header">
+        <h2>Members</h2>
+      </div>
+      <div class="window-body">
+        <p>Member management coming soon.</p>
+      </div>
+    </div>
+
+
+    <!-- CASH UP WINDOW -->
+    <div id="cash-up-window" class="window hidden">
+      <div class="window-header">
+        <h2>Cash Up</h2>
+      </div>
+      <div class="window-body">
+        <p>Cash-up tools coming soon.</p>
+      </div>
+    </div>
+
+    <!-- SALES LOG WINDOW -->
+    <div id="sales-log-window" class="window hidden">
+      <div class="window-header">
+        <h2>Sales Log</h2>
+      </div>
+      <div class="window-body">
+        <p>Sales log coming soon.</p>
+      </div>
+    </div>
+
+
+    <!-- SETTINGS WINDOW -->
+<div id="settings-window" class="window hidden">
+  <div class="window-header">
+    <h2>Settings</h2>
+  </div>
+
+  <div class="window-body">
+
+    <!-- BUTTON ROW -->
+    <div id="settings-buttons" style="
+        display:flex;
+        flex-direction:row;
+        justify-content:flex-start;
+        align-items:flex-start;
+        gap:12px;
+        margin-bottom:20px;
+    ">
+
+      <button id="tsmsbs-btn" style="width:150px; background:#1b5e20; color:white; padding:10px 16px; border:none; border-radius:6px; cursor:pointer;">TS, MS & BS</button>
+
+      <button id="membertypes-btn" style="width:150px; background:#1b5e20; color:white; padding:10px 16px; border:none; border-radius:6px; cursor:pointer;">Member Types</button>
+
+      <button id="staff-btn" style="width:150px; background:#1b5e20; color:white; padding:10px 16px; border:none; border-radius:6px; cursor:pointer;">Staff</button>
+
+      <button id="staticcosts-btn"
+        data-section="staticcosts-card"
+        style="
+            width:150px;
+            background:#1b5e20;
+            color:white;
+            padding:10px 16px;
+            border:none;
+            border-radius:6px;
+            cursor:pointer;
+        ">
+        Static Costs
+      </button>
+
+    <!-- Expenses button (same level as Static Costs button) -->
+<button id="expenses-btn"
+style="
+        width:150px;
+        background:#1b5e20;
+        color:white;
+        padding:10px 16px;
+        border:none;
+        border-radius:6px;
+        cursor:pointer;
+    ">
+    Expenses
+</button>  
+
+    </div>
+    <!-- END BUTTON ROW -->
+
+
+
+    <!-- TS / MS / BS card -->
+    <div id="tsmsbs-card" style="display:none; background:#e8f5e9; border:2px solid #1b5e20; padding:16px; border-radius:8px; margin-top:10px; width:300px; margin-left:auto; margin-right:auto; position:absolute; z-index:9999;">
+        <h3 style="color:#1b5e20; margin-top:0;">TS, MS & BS</h3>
+
+        <div style="display:grid; grid-template-columns: 120px 1fr; gap:12px;">
+            <div><strong>Top Shelf (TS)</strong></div>
+            <input id="ts-value" type="number" step="0.01" style="padding:6px; border-radius:4px; border:1px solid:#1b5e20;">
+
+            <div><strong>Mid Shelf (MS)</strong></div>
+            <input id="ms-value" type="number" step="0.01" style="padding:6px; border-radius:4px; border:1px solid:#1b5e20;">
+
+            <div><strong>Bottom Shelf (BS)</strong></div>
+            <input id="bs-value" type="number" step="0.01" style="padding:6px; border-radius:4px; border:1px solid:#1b5e20;">
+        </div>
+
+        <div style="display:flex; justify-content:space-between; margin-top:16px;">
+            <button onclick="cancelTSMSBS()" style="background:#888; color:white; padding:10px 16px; border:none; border-radius:6px; cursor:pointer;">Cancel</button>
+            <button onclick="saveTSMSBS()" style="background:#1b5e20; color:white; padding:10px 16px; border:none; border-radius:6px; cursor:pointer;">Save</button>
+        </div>
+    </div>
+
+
+
+    <!-- Member Types card -->
+    <div id="membertypes-card" style="display:none; background:#e8f5e9; border:2px solid #1b5e20; padding:16px; border-radius:8px; margin-top:10px; width:350px; margin-left:auto; margin-right:auto; position:absolute; z-index:10001;">
+        <h3 style="color:#1b5e20; margin-top:0;">Member Types</h3>
+
+        <div id="membertypes-grid" style="display:grid; grid-template-columns: 1fr 80px; gap:12px;"></div>
+
+        <div style="display:flex; justify-content:space-between; margin-top:16px;">
+            <button onclick="cancelMemberTypes()" style="background:#888; color:white; padding:10px 16px; border:none; border-radius:6px; cursor:pointer;">Cancel</button>
+            <button onclick="saveMemberTypes()" style="background:#1b5e20; color:white; padding:10px 16px; border:none; border-radius:6px; cursor:pointer;">Save</button>
+        </div>
+    </div>
+
+
+
+    <!-- Staff card -->
+    <div id="staff-card" style="display:none; background:#e8f5e9; border:2px solid #1b5e20; padding:16px; border-radius:8px; margin-top:10px; width:350px; margin-left:auto; margin-right:auto; position:absolute; z-index:10001;">
+        <h3 style="color:#1b5e20; margin-top:0;">Staff Access</h3>
+
+        <div id="staff-grid" style="display:grid; grid-template-columns: 1fr; gap:12px;"></div>
+
+        <div style="display:flex; justify-content:space-between; margin-top:16px;">
+            <button onclick="cancelStaff()" style="background:#888; color:white; padding:10px 16px; border:none; border-radius:6px; cursor:pointer;">Cancel</button>
+            <button onclick="saveStaff()" style="background:#1b5e20; color:white; padding:10px 16px; border:none; border-radius:6px; cursor:pointer;">Save</button>
+        </div>
+    </div>
+
+  <!-- Static Costs card -->
+<div id="staticcosts-card" style="display:none; background:#e8f5e9; border:2px solid #1b5e20; padding:16px; border-radius:8px; margin-top:10px; width:500px; margin-left:auto; margin-right:auto; position:absolute; z-index:10001;">
+    <h3 style="color:#1b5e20; margin-top:0;">Static Costs – Dream Green</h3>
+
+    <div id="staticcosts-grid" style="display:grid; grid-template-columns: 1fr 100px 100px; gap:12px; margin-bottom:16px;"></div>
+
+    <button onclick="addStaticCostRow()" style="background:#1b5e20; color:white; padding:8px 12px; border:none; border-radius:6px; cursor:pointer; margin-bottom:16px;">+ Add Row</button>
+
+    <!-- BREAK-EVEN SUMMARY -->
+    <div id="staticcosts-summary"
+        style="background:#ffffff; border:2px solid #1b5e20; padding:12px; border-radius:6px; margin-bottom:16px;">
+
+        <div style="display:flex; justify-content:space-between; text-align:center; gap:20px;">
+
+            <div style="flex:1;">
+                <div style="font-size:14px; color:#1b5e20;">Daily Break‑Even</div>
+                <div id="staticcosts-daily" style="font-size:28px; font-weight:bold; color:#1b5e20;">€0.00</div>
+            </div>
+
+            <div style="flex:1;">
+                <div style="font-size:14px; color:#1b5e20;">Monthly Break‑Even</div>
+                <div id="staticcosts-monthly" style="font-size:28px; font-weight:bold; color:#1b5e20;">€0.00</div>
+            </div>
+
+            <div style="flex:1;">
+                <div style="font-size:14px; color:#1b5e20;">Annual Break‑Even</div>
+                <div id="staticcosts-annual" style="font-size:28px; font-weight:bold; color:#1b5e20;">€0.00</div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- FOOTER BUTTONS -->
+    <div style="display:flex; justify-content:space-between; margin-top:10px;">
+        <button onclick="cancelStaticCosts()" 
+                style="background:#888; color:white; padding:10px 16px; border:none; border-radius:6px; cursor:pointer;">
+            Cancel
+        </button>
+
+        <button onclick="saveStaticCosts()" 
+                style="background:#1b5e20; color:white; padding:10px 16px; border:none; border-radius:6px; cursor:pointer;">
+            Save
+        </button>
+    </div>
+</div> <!-- closes staticcosts-card -->
+
+
+
+
+
+<!-- Expenses card -->
+<div id="expenses-card" 
+     class="hidden"
+     style="display:none; background:#e8f5e9; border:2px solid #1b5e20; padding:16px; border-radius:8px; margin-top:10px; width:350px; margin-left:auto; margin-right:auto; position:absolute; z-index:10002;">
+
+    <h3 style="color:#1b5e20; margin-top:0;">Expenses</h3>
+
+    <div id="expenses-grid" 
+         style="display:flex; grid-template-columns: 1fr; gap:12px; margin-bottom:12px">
+    </div>
+
+    <button onclick="addExpenseRow()" 
+            style="background:#1b5e20; color:white; padding:8px 12px; border:none; border-radius:6px; cursor:pointer; margin-bottom:16px;">
+        + Add Expense
+    </button>
+
+    <div style="display:flex; justify-content:space-between; margin-top:10px;">
+        <button onclick="cancelExpenses()" 
+                style="background:#888; color:white; padding:10px 16px; border:none; border-radius:6px; cursor:pointer;">
+            Cancel
+        </button>
+
+        <button onclick="saveExpenses()" 
+                style="background:#1b5e20; color:white; padding:10px 16px; border:none; border-radius:6px; cursor:pointer;">
+            Save
+        </button>
+    </div>
+
+</div> <!-- closes expenses-card -->
+
+
+  </div> <!-- closes window-body -->
+
+</div> <!-- closes settings-window -->
+
+
+  <!-- ROI WINDOW -->
+    <div id="roi-window" class="window hidden">
+      <div class="window-header">
+        <h2>ROI</h2>
+      </div>
+      <div class="window-body">
+        <p>ROI analytics coming soon.</p>
+
+
+      </div>
+    </div>
+
+<div id="inventory-window" class="window hidden">
+  <div class="window-header inventory-header-flex">
+    
+    <!-- LEFT: Bulk Update Button -->
+    <button id="bulk-update-btn" class="bulk-btn">
+      Bulk Update (<span id="bulk-count">0</span>)
+    </button>
+
+    <!-- CENTER: Title -->
+    <h2 class="inventory-title">Inventory</h2>
+
+    <!-- RIGHT: Empty for now -->
+    <div class="header-spacer"></div>
+
+  </div>
+
+
+  <input id="inventory-search"
+       type="text"
+       placeholder="Search products..."
+       class="search-input">
+
+
+  <div id="inventory-table-container">
+    <table id="inventory-table">
+      <thead>
+        <tr>
+          <th>Bulk</th>
+          <th>Available</th>
+          <th>Image</th>
+          <th>Product</th>
+          <th>Category</th>
+          <th>Stock</th>
+          <th>Unit</th>
+          <th>Weighted Cost</th>
+          <th>Selling Price</th>
+          <th>Low Stock</th>
+          <th>Status</th>
+          <th>Edit</th>
+          <th>Delete</th>
+        </tr>
+      </thead>
+
+      <tbody id="inventory-body">
+        <!-- Rows will be injected here -->
+      </tbody>
+
+    </table>
+  </div>
+</div> <!-- closes inventory-window ONLY -->
+
+<div id="bulk-update-modal" class="modal hidden">
+  <div class="modal-content bulk-modal">
+
+    <h2 id="bulk-update-title">Bulk Update Stock</h2>
+    <p class="bulk-subtext">
+      Enter the quantity of new stock to add. Weighted cost will be calculated automatically.
+    </p>
+
+    <!-- 🔥 THIS WRAPPER IS REQUIRED -->
+    <div id="bulk-update-list" class="bulk-list"></div>
+
+    <div class="bulk-buttons">
+      <button id="bulk-update-cancel" class="btn-secondary">Cancel</button>
+      <button id="bulk-update-apply" class="btn-primary">Update Stock & Prices</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- STATISTICS WINDOW -->
+<div id="statistics-window" class="window hidden" style="background:#e8f5e9; color:#1b5e20; padding:20px;">
+
+  <div class="window-header">
+    <h2 id="stats-product-title" style="color:#1b5e20;">Statistics</h2>
+    <button id="stats-back-btn" class="btn-secondary">Back</button>
+  </div>
+
+  <div id="statistics-grid" style="
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+  ">
+
+    <!-- Product Performance -->
+    <div class="stats-card pp-card" style="
+        background:white;
+        border:2px solid #1b5e20;
+        border-radius:10px;
+        padding:20px;
+    ">
+      <h3 style="margin-top:0; color:#1b5e20;">Product Performance</h3>
+      <p>Quick overview of sales, revenue, and profit.</p>
+      <button class="stats-btn" style="
+          background:#1b5e20;
+          color:white;
+          padding:10px 16px;
+          border:none;
+          border-radius:6px;
+          cursor:pointer;
+      ">View Product Performance</button>
+    </div>
+
+    <!-- Profit & Pricing -->
+    <div class="stats-card" style="
+        background:white;
+        border:2px solid #1b5e20;
+        border-radius:10px;
+        padding:20px;
+    ">
+      <h3 style="margin-top:0; color:#1b5e20;">Profit & Pricing</h3>
+      <p>Understand profit, discounts, and pricing behaviour.</p>
+      <button class="stats-btn" style="
+          background:#1b5e20;
+          color:white;
+          padding:10px 16px;
+          border:none;
+          border-radius:6px;
+          cursor:pointer;
+      ">View Profit & Pricing</button>
+    </div>
+
+    <!-- Member Insights -->
+    <div class="stats-card" style="
+        background:white;
+        border:2px solid #1b5e20;
+        border-radius:10px;
+        padding:20px;
+    ">
+      <h3 style="margin-top:0; color:#1b5e20;">Member Insights</h3>
+      <p>See who buys this product and how often.</p>
+      <button class="stats-btn" style="
+          background:#1b5e20;
+          color:white;
+          padding:10px 16px;
+          border:none;
+          border-radius:6px;
+          cursor:pointer;
+      ">View Member Insights</button>
+    </div>
+
+    <!-- Shelf Category Insights -->
+    <div class="stats-card" style="
+        background:white;
+        border:2px solid #1b5e20;
+        border-radius:10px;
+        padding:20px;
+        grid-column: span 2;
+    ">
+      <h3 style="margin-top:0; color:#1b5e20;">Shelf Category Insights</h3>
+      <p>Track TS/MS/BS performance and category movement.</p>
+      <button class="stats-btn" style="
+          background:#1b5e20;
+          color:white;
+          padding:10px 16px;
+          border:none;
+          border-radius:6px;
+          cursor:pointer;
+      ">View Shelf Category Insights</button>
+    </div>
+
+    <!-- Basket & Behaviour -->
+    <div class="stats-card" style="
+        background:white;
+        border:2px solid #1b5e20;
+        border-radius:10px;
+        padding:20px;
+    ">
+      <h3 style="margin-top:0; color:#1b5e20;">Basket & Behaviour</h3>
+      <p>Explore buying patterns and frequently bought together.</p>
+      <button class="stats-btn" style="
+          background:#1b5e20;
+          color:white;
+          padding:10px 16px;
+          border:none;
+          border-radius:6px;
+          cursor:pointer;
+      ">View Basket Behaviour</button>
+    </div>
+
+    <!-- Historical Trends -->
+    <div class="stats-card" style="
+        background:white;
+        border:2px solid #1b5e20;
+        border-radius:10px;
+        padding:20px;
+        grid-column: span 2;
+    ">
+      <h3 style="margin-top:0; color:#1b5e20;">Historical Trends</h3>
+      <p>View long-term charts and seasonal patterns.</p>
+      <button class="stats-btn" style="
+          background:#1b5e20;
+          color:white;
+          padding:10px 16px;
+          border:none;
+          border-radius:6px;
+          cursor:pointer;
+      ">View Trends</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- PRODUCT PERFORMANCE MODAL -->
+<div id="product-performance-modal" class="modal hidden">
+  <div class="modal-content stats-modal">
+
+    <h2 id="pp-title">Product Performance</h2>
+
+    <div id="pp-body" style="margin-top: 20px;">
+      <!-- JS will inject stats here -->
+    </div>
+
+    <div class="modal-buttons">
+      <button id="pp-close" class="btn-secondary">Close</button>
+    </div>
+
+  </div>
+</div>
+
+
+    <!-- PRODUCT MODAL -->
+      <div id="product-modal" class="modal hidden">
+        <div class="modal-content modern-modal">
+          <h3 class="modal-title">Add Product</h3>
+
+         <label>Category</label>
+<div class="category-selector-wrapper">
+  <input type="text" id="category-selector-input" placeholder="Search categories...">
+  <div id="category-selector-dropdown" class="category-dropdown hidden"></div>
+</div>
+
+
+          <label>
+            Product Name
+            <input type="text" id="product-name" placeholder="Type Here......" />
+          </label>
+
+          <label>
+            Opening Stock
+            <input type="number" id="product-opening-stock" min="0" placeholder="Type Here......" />
+          </label>
+
+          <label>
+            Stock Unit
+            <select id="product-stock-unit">
+              <option value="g">g (grams)</option>
+              <option value="s">s (singles)</option>
+              <option value="#"># (units)</option>
+            </select>
+          </label>
+
+          <label>
+            Unit Price (€)
+            <input type="number" id="product-unit-price" step="0.01" min="0" placeholder="Type Here......" />
+          </label>
+
+          <label>
+            Selling Price (€)
+            <input type="number" id="product-selling-price" step="0.01" min="0" placeholder="Type Here......" />
+          </label>
+
+          <label>
+            Low Stock Threshold
+            <input type="number" id="product-low-stock" min="0" placeholder="Type Here......" />
+          </label>
+
+          <label>
+            Product Image
+            <input type="file" id="product-image-input" accept="image/*" />
+          </label>
+
+          <img id="product-image-preview" class="image-preview"
+     src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" />
+
+
+          <div class="modal-actions">
+            <button id="product-save-btn" class="primary-btn">Save</button>
+            <button id="product-cancel-btn" class="cancel-btn">Cancel</button>
+          </div>
+        </div>
+
+</div> <!-- END LAYOUT -->
+
+
+
+
+<!-- Calendar Modal -->
+<div id="calendar-modal" class="modal-overlay" style="display:none;">
+  <div class="modal-box calendar-box">
+    <h2>Calendar</h2>
+
+    <div id="calendar-content">
+
+      <div class="calendar-header">
+        <button id="cal-prev" class="cal-nav-btn">◀</button>
+        <h3 id="cal-month-year"></h3>
+        <button id="cal-next" class="cal-nav-btn">▶</button>
+      </div>
+<div id="calendar-weekdays" class="calendar-weekdays">
+  <div>Mon</div>
+  <div>Tue</div>
+  <div>Wed</div>
+  <div>Thu</div>
+  <div>Fri</div>
+  <div>Sat</div>
+  <div>Sun</div>
+</div>
+
+    <div class="calendar-grid" id="calendar-grid"></div>
+
+    </div>
+
+    <div class="modal-buttons">
+      <button id="calendar-close" class="modal-btn primary">Close</button>
+
+      <button id="snooze-btn">Snooze 5 min</button>
+<button id="dismiss-btn">Dismiss</button>
+
+    </div>
+  </div>
+</div>
+
+<!-- ADD EVENT MODAL -->
+<div id="event-modal" class="modal-overlay" style="display:none;">
+  <div class="modal-box">
+    <h2>Add Event</h2>
+
+    <p id="event-date-label"></p>
+
+    <input id="event-title" type="text" placeholder="Event title..." class="modal-input">
+    <input id="event-time" type="time" class="modal-input">
+
+    <!-- ⭐ ADD THIS BLOCK RIGHT HERE -->
+    <label for="event-repeat">Repeat</label>
+    <select id="event-repeat" class="modal-input">
+      <option value="none">Does not repeat</option>
+      <option value="weekly">Weekly</option>
+      <option value="monthly">Monthly</option>
+      <option value="yearly">Yearly</option>
+    </select>
+    <!-- ⭐ END OF NEW BLOCK -->
+
+ <select id="event-reminder" class="modal-input">
+  <option value="none">No reminder</option>
+  <option value="5">5 minutes before</option>
+  <option value="10">10 minutes before</option>
+  <option value="30">30 minutes before</option>
+  <option value="60">1 hour before</option>
+  <option value="1440">1 day before</option>
+  <option value="10080">1 week before</option>
+  <option value="20160">2 weeks before</option>
+</select>
+   
+
+    <div id="event-list"></div>
+    
+    <div class="modal-buttons">
+      <button id="event-save" class="modal-btn primary">Save</button>
+      <button id="event-cancel" class="modal-btn secondary">Cancel</button>
+    </div>
+  </div>
+</div>
+
+
+
+<div id="duplicate-modal" class="modal-overlay">
+  <div class="modal-box">
+    <h2>Duplicate Product</h2>
+    <p id="duplicate-message">This product already exists in this category.</p>
+
+    <div class="modal-buttons">
+      <button id="duplicate-ok" class="modal-btn primary">OK</button>
+      <button id="duplicate-cancel" class="modal-btn secondary">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Floating Chatbox Toggle -->
+<button id="dg-chat-toggle">💬</button>
+
+<!-- Chatbox Container -->
+<div id="dg-chatbox">
+  <div id="dg-chat-header">Dream Green Assistant</div>
+
+  <div id="dg-chat-messages"></div>
+
+  <div id="dg-chat-input">
+    <input type="text" id="dg-chat-text" placeholder="Type a message...">
+    <button id="dg-chat-send">Send</button>
+  </div>
+</div>
+
+<script>
+/* -----------------------------------------------------------
+   SECTION A — UI LAYER (DOM + CHATBOX + CALENDAR + TIME)
+   ----------------------------------------------------------- */
+window.addEventListener("DOMContentLoaded", () => {
+
+  /* DATE/TIME CARD */
+  function startDateTimeCard() {
+    const dayEl = document.getElementById("dt-day");
+    const dateEl = document.getElementById("dt-date");
+    const timeEl = document.getElementById("dt-time");
+
+    function update() {
+      const now = new Date();
+
+      dayEl.textContent = new Intl.DateTimeFormat("en-GB", { weekday: "long" }).format(now);
+      dateEl.textContent = new Intl.DateTimeFormat("en-GB", { day: "2-digit", month: "2-digit", year: "numeric" }).format(now);
+      timeEl.textContent = new Intl.DateTimeFormat("en-GB", { hour: "2-digit", minute: "2-digit", hour12: false }).format(now);
+    }
+
+    update();
+    setInterval(update, 1000);
+  }
+  startDateTimeCard();
+
+
+  /* CALENDAR */
+  let currentMonth = new Date().getMonth();
+  let currentYear = new Date().getFullYear();
+
+  function renderCalendar() {
+    const monthYearEl = document.getElementById("cal-month-year");
+    const grid = document.getElementById("calendar-grid");
+
+    const monthNames = [
+      "January","February","March","April","May","June",
+      "July","August","September","October","November","December"
+    ];
+
+    monthYearEl.textContent = `${monthNames[currentMonth]} ${currentYear}`;
+    grid.innerHTML = "";
+
+    const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+    const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+    for (let i = 0; i < (firstDay === 0 ? 6 : firstDay - 1); i++) {
+      grid.appendChild(document.createElement("div"));
+    }
+
+    const today = new Date();
+
+    for (let day = 1; day <= daysInMonth; day++) {
+      const cell = document.createElement("div");
+      cell.classList.add("calendar-day");
+      cell.textContent = day;
+
+      if (
+        day === today.getDate() &&
+        currentMonth === today.getMonth() &&
+        currentYear === today.getFullYear()
+      ) {
+        cell.classList.add("today");
+      }
+
+      grid.appendChild(cell);
+    }
+  }
+
+  document.getElementById("open-calendar").addEventListener("click", () => {
+    document.getElementById("calendar-modal").style.display = "flex";
+    renderCalendar();
+  });
+
+  document.getElementById("calendar-close").addEventListener("click", () => {
+    document.getElementById("calendar-modal").style.display = "none";
+  });
+
+  document.getElementById("cal-prev").addEventListener("click", () => {
+    currentMonth--;
+    if (currentMonth < 0) { currentMonth = 11; currentYear--; }
+    renderCalendar();
+  });
+
+  document.getElementById("cal-next").addEventListener("click", () => {
+    currentMonth++;
+    if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+    renderCalendar();
+  });
+
+
+  /* CHATBOX UI */
+  const chatbox = document.getElementById("dg-chatbox");
+  const chatToggle = document.getElementById("dg-chat-toggle");
+  const chatInput = document.getElementById("dg-chat-text");
+  const chatSend = document.getElementById("dg-chat-send");
+  const chatMessages = document.getElementById("dg-chat-messages");
+
+  chatToggle.addEventListener("click", () => {
+    chatbox.classList.toggle("open");
+  });
+
+  function addMessage(text, sender = "user") {
+    const msg = document.createElement("div");
+    msg.classList.add("dg-msg", sender);
+    msg.textContent = text;
+    chatMessages.appendChild(msg);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }
+
+  chatSend.addEventListener("click", async () => {
+    const text = chatInput.value.trim();
+    if (!text) return;
+
+    addMessage(text, "user");
+    chatInput.value = "";
+
+    const reply = await processChatQuery(text);
+    addMessage(reply, "assistant");
+  });
+
+  chatInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") chatSend.click();
+  });
+
+}); // END DOMContentLoaded
+
+
+/* -----------------------------------------------------------
+   SECTION B — INTELLIGENCE LAYER (EMPTY FOR NOW)
+   ----------------------------------------------------------- */
+/* ---------- BLOCK 1: FIRESTORE HELPERS ---------- */
+
+// Load product names mapped by productId
+async function loadProductNames() {
+  const map = {};
+  const snap = await db.collection("products").get();
+
+  snap.forEach(doc => {
+    const data = doc.data();
+    if (data.productId) {
+      map[data.productId] = data.name || data.productName || "Unnamed Product";
+    }
+  });
+
+  return map;
+}
+
+// Get a product by exact name match
+async function getProductByName(name) {
+  const snap = await db.collection("products").get();
+  const lower = name.toLowerCase();
+
+  for (const doc of snap.docs) {
+    const data = doc.data();
+    if (data.name && data.name.toLowerCase() === lower) {
+      return data;
+    }
+  }
+
+  return null;
+}
+
+// Get all products in a category
+async function getProductsByCategory(category) {
+  const snap = await db.collection("products")
+    .where("categoryLower", "==", category)
+    .get();
+
+  return snap.docs.map(doc => doc.data());
+}
+
+/* ---------- BLOCK 2: PRODUCT NAME EXTRACTION ---------- */
+
+function extractProductName(lower) {
+  return lower
+    .replace("what is", "")
+    .replace("tell me about", "")
+    .replace("what's", "")
+    .replace("whats", "")
+    .trim();
+}
+
+/* ---------- BLOCK 3: PRODUCT DETAIL FORMATTER ---------- */
+
+function formatProductDetails(p) {
+  return `
+🌿 **${p.name || "Unnamed Product"}**
+
+**Category:** ${p.category || "Unknown"}
+**Price:** €${p.sellingPrice ?? p.price ?? "N/A"}
+**Stock Unit:** ${p.stockUnit || "N/A"}
+**Low Stock Threshold:** ${p.lowStockThreshold ?? "N/A"}
+
+**THC:** ${p.thc ?? "N/A"}%
+**CBD:** ${p.cbd ?? "N/A"}%
+
+${p.description || ""}
+  `.trim();
+}
+
+/* ---------- BLOCK 4: STOCK INTELLIGENCE ---------- */
+
+async function handleStockQuery(userText) {
+  try {
+    const lower = userText.toLowerCase();
+
+    // Load product names mapped by productId
+    const productNames = await loadProductNames();
+
+    // Reverse map: nameLower → productId
+    const nameToId = {};
+    for (const id in productNames) {
+      nameToId[productNames[id].toLowerCase()] = id;
+    }
+
+    // Try to detect a product name in the user's message
+    let matchedProductId = null;
+    for (const nameLower in nameToId) {
+      if (lower.includes(nameLower)) {
+        matchedProductId = nameToId[nameLower];
+        break;
+      }
+    }
+
+    const snapshot = await db.collection("inventory").get();
+
+    if (snapshot.empty) {
+      return "Your Inventory collection is empty.";
+    }
+
+    // If a specific product was asked about
+    if (matchedProductId) {
+      let found = false;
+      let reply = "";
+
+      snapshot.forEach(doc => {
+        const item = doc.data();
+        if (item.productId === matchedProductId) {
+          found = true;
+          const name = productNames[item.productId] || item.productId;
+
+          if (item.stock === 0) reply = `❌ ${name} is out of stock`;
+          else if (item.stock <= item.lowStockThreshold) reply = `⚠️ ${name} is low in stock (${item.stock})`;
+          else reply = `🌿 ${name} is in stock (${item.stock})`;
+        }
+      });
+
+      return found ? reply : "I couldn't find that product in your inventory.";
+    }
+
+    // Otherwise return full stock list
+    let lowStock = [];
+    let outOfStock = [];
+    let healthy = [];
+
+    snapshot.forEach(doc => {
+      const item = doc.data();
+      const name = productNames[item.productId] || item.productId;
+
+      if (item.stock === 0) outOfStock.push(name);
+      else if (item.stock <= item.lowStockThreshold) lowStock.push(`${name} (${item.stock})`);
+      else healthy.push(`${name} (${item.stock})`);
+    });
+
+    let reply = "";
+
+    if (outOfStock.length > 0) reply += `❌ Out of stock: ${outOfStock.join(", ")}\n`;
+    if (lowStock.length > 0) reply += `⚠️ Low stock: ${lowStock.join(", ")}\n`;
+    if (healthy.length > 0) reply += `🌿 Healthy stock: ${healthy.join(", ")}`;
+
+    return reply || "No stock data found.";
+
+  } catch (err) {
+    console.error(err);
+    return "Error reading stock data.";
+  }
+}
+
+/* ---------- BLOCK 5: CATEGORY INTELLIGENCE ---------- */
+
+async function handleCategoryQuery(category) {
+  const items = await getProductsByCategory(category);
+
+  if (items.length === 0) {
+    return `I couldn't find anything in the ${category} category.`;
+  }
+
+  const names = items.map(i => i.name).join(", ");
+  return `Here are the products in the ${category} category: ${names}`;
+}
+
+/* ---------- BLOCK 6: INTELLIGENCE ROUTER ---------- */
+
+/* ---------- CATEGORY MAP (Dream Green real categories) ---------- */
+
+const CATEGORY_MAP = {
+  "weed": "weed",
+  "tea & coffee": "tea & coffee",
+  "tea and coffee": "tea & coffee",
+  "crisps": "crisps etc.",
+  "crisps etc": "crisps etc.",
+  "sundries": "sundries",
+  "club": "club",
+  "merch": "merchandise",
+  "merchandise": "merchandise",
+  "chocolate bars": "chocolate bars",
+  "chocolate": "chocolate bars",
+  "hash": "hash",
+  "soft drinks": "soft drinks",
+  "drinks": "soft drinks"
+};
+
+
+async function handleUserMessage(text) {
+  const lower = text.toLowerCase().trim();
+
+  // PRODUCT DETAIL QUESTIONS
+  if (lower.startsWith("what is") || lower.startsWith("tell me about")) {
+    const name = extractProductName(lower);
+    const product = await getProductByName(name);
+
+    if (!product) return "I couldn't find that product.";
+    return formatProductDetails(product);
+  }
+
+  // PRODUCT-SPECIFIC STOCK QUESTIONS
+  if (
+    lower.includes("in stock") ||
+    lower.includes("out of stock") ||
+    lower.includes("low stock") ||
+    lower.includes("stock levels")
+  ) {
+    return await handleStockQuery(text);
+  }
+
+  // GENERAL STOCK / INVENTORY QUESTIONS
+  if (lower.includes("stock") || lower.includes("inventory")) {
+    return await handleStockQuery(text);
+  }
+
+  // CATEGORY QUESTIONS
+ // CATEGORY DETECTION USING CATEGORY MAP
+for (const trigger in CATEGORY_MAP) {
+  if (lower.includes(trigger)) {
+    const categoryKey = CATEGORY_MAP[trigger]; 
+    return await handleCategoryQuery(categoryKey);
+  }
+}
+
+  // SALES QUESTIONS (placeholder)
+  if (lower.includes("sales") || lower.includes("sold") || lower.includes("today")) {
+    return "Looking up your sales data…";
+  }
+
+  // MEMBER QUESTIONS (placeholder)
+  if (lower.includes("member") || lower.includes("customer")) {
+    return "Checking member insights…";
+  }
+
+  // PRODUCT QUESTIONS (fallback)
+  if (lower.includes("product") || lower.includes("strain") || lower.includes("category")) {
+    return "Let me pull up product details…";
+  }
+
+  // GENERAL FALLBACK
+  return "I can help with Dream Green data. Try asking about stock, sales, members, or products.";
+}
+
+
+
+/* -----------------------------------------------------------
+   SECTION C — BRIDGE FUNCTION
+   ----------------------------------------------------------- */
+async function processChatQuery(text) {
+  return await handleUserMessage(text);
+}
+
+</script>
+
+
+</body>
+</html>
+
