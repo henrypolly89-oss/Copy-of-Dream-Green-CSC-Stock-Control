@@ -1,0 +1,7 @@
+[
+  {
+    "origin": ["https://backoffice-inventory.web.app"],
+    "method": ["GET", "POST", "PUT", "HEAD"],
+    "maxAgeSeconds": 3600
+  }
+]
